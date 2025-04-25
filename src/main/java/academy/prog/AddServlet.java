@@ -17,10 +17,12 @@ public class AddServlet extends HttpServlet {
         String bufStr = new String(buf, StandardCharsets.UTF_8);
 
 		Message msg = Message.fromJSON(bufStr);
-		if (msg != null)
-			msgList.add(msg);
-		else
-			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+		if (msg != null) {
+            msgList.add(msg);
+        }
+		else {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+        }
 	}
 
 	private byte[] requestBodyToArray(HttpServletRequest req) throws IOException {

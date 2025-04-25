@@ -12,6 +12,7 @@ public class GetListServlet extends HttpServlet {
     @Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String fromStr = req.getParameter("from");
+		String toLogin  = req.getParameter("to_login");
 		int from = 0;
 		try {
 			from = Integer.parseInt(fromStr);
@@ -22,15 +23,26 @@ public class GetListServlet extends HttpServlet {
 		}
 
 		resp.setContentType("application/json");
-		
-		String json = msgList.toJSON(from);
-		if (json != null) {
-			OutputStream os = resp.getOutputStream();
-            byte[] buf = json.getBytes(StandardCharsets.UTF_8);
-			os.write(buf);
+		HttpSession session = req.getSession(false);
+		if (session != null) {
+			String fromLogin = (String) session.getAttribute("login");
+			if (fromLogin != null) {
+				String json = msgList.toJSON(from, fromLogin, toLogin);
+				if (json != null) {
+					OutputStream os = resp.getOutputStream();
+					byte[] buf = json.getBytes(StandardCharsets.UTF_8);
+					os.write(buf);
 
-			//PrintWriter pw = resp.getWriter();
-			//pw.print(json);
+					//PrintWriter pw = resp.getWriter();
+					//pw.print(json);
+				}
+			}
+			else {
+				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			}
+		}
+		else {
+			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		}
 	}
 }
